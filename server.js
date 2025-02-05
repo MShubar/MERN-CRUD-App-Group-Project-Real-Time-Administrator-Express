@@ -9,6 +9,9 @@ const morgan = require('morgan')
 const methodOverride = require('method-override')
 const PORT = process.env.PORT
 
+// require paths
+const userRouter = require('./routes/users')
+
 app.use(express.static('public'))
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
@@ -29,5 +32,6 @@ mongoose.connect(process.env.MONGODB_URI)
 mongoose.connection.on('connected', () => {
   console.log(`Connection to MongoDB ${mongoose.connection.name}`)
 })
+app.use('/users', userRouter)
 
 app.listen(PORT, () => console.log(`Server is running on port ${PORT}`))
