@@ -30,6 +30,16 @@ const signUp = async (req, res) => {
     ) {
       return res.status(400).json({ error: 'All fields are required' })
     }
+    const existingUser = await User.findOne({ email })
+    if (existingUser) {
+      return res.status(400).json({ error: 'User already exists' })
+    }
+    const existingCR = await Company.findOne({ crNumber })
+    if (existingCR) {
+      return res
+        .status(400)
+        .json({ error: 'Company with CR Number already exists' })
+    }
     const user = await createUser(email, password, 'company')
     const company = new Company({
       name,
