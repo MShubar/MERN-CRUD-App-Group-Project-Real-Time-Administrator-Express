@@ -4,7 +4,7 @@ const { signToken } = require("../middleware/jwt")
 
 const createUser = async (req, res, next) => {
   try {
-    const { email, password, role = "company" } = req.body
+    const { email, password } = req.body
     if (!email || !password) {
       return res.status(400).json({ error: "Missing required fields." })
     }
@@ -19,7 +19,7 @@ const createUser = async (req, res, next) => {
     const newUser = await User.create({
       email,
       password: hashedPassword,
-      role,
+      role: "company",
     })
 
     req.user = newUser
