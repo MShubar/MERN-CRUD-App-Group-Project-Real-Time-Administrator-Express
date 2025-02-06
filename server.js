@@ -11,6 +11,7 @@ const PORT = process.env.PORT
 
 // require paths
 const userRouter = require("./routes/users")
+const companyRouter = require("./routes/companies")
 
 app.use(express.static("public"))
 app.use(express.json())
@@ -33,5 +34,6 @@ mongoose.connection.on("connected", () => {
   console.log(`Connection to MongoDB ${mongoose.connection.name}`)
 })
 app.use("/users", userRouter)
+app.use("/companies", companyRouter)
 
 app.listen(PORT, () => console.log(`Server is running on port ${PORT}`))
