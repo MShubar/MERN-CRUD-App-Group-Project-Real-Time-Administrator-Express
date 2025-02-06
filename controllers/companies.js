@@ -1,16 +1,11 @@
-const Company = require("../models/Company")
-const { signToken } = require("../middleware/jwt")
-const { createUser } = require("./users")
+const Company = require('../models/Company')
+const { createUser } = require('./users')
+const { signToken } = require('../middleware/jwt') // Ensure this is correctly imported
 
 const signUp = async (req, res) => {
   try {
-    const { name, address, crNumber, phone, size, logoImage, crDocument } =
-      req.body
-    if (!name || !crNumber) {
-      return res.status(400).json({ error: "Missing required fields." })
-    }
-
-    const newCompany = await Company.create({
+    console.log('Request Body:', req.body)
+    const {
       name,
       address,
       crNumber,
@@ -18,20 +13,45 @@ const signUp = async (req, res) => {
       size,
       logoImage,
       crDocument,
-      userId: req.user._id,
-      status: "CR-in-progress",
-    })
+      email,
+      password
+    } = req.body
 
-    const token = signToken(req.user)
+    if (
+      !name ||
+      !address ||
+      !crNumber ||
+      !phone ||
+      !size ||
+      !logoImage ||
+      !crDocument ||
+      !email ||
+      !password
+    ) {
+      return res.status(400).json({ error: 'All fields are required' })
+    }
+    const user = await createUser(email, password, 'company')
+    const company = new Company({
+      name,
+      address,
+      crNumber,
+      phone,
+      size,
+      logoImage,
+      crDocument,
+      status: 'CR-in-progress',
+      userId: [user._id]
+    })
+    await company.save()
+    const token = signToken(user)
     return res.status(201).json({
-      message: "Company created successfully.",
-      token,
-      company: newCompany,
-      user: req.user,
+      message: 'Company registered successfully',
+      company,
+      token
     })
   } catch (error) {
-    console.error(error)
-    res.status(500).json({ error: "Something went wrong!" })
+    console.error('Error:', error)
+    return res.status(400).json({ error: error.message })
   }
 }
 

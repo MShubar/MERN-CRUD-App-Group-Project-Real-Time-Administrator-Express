@@ -1,9 +1,9 @@
-const express = require("express")
+const express = require('express')
 const router = express.Router()
-const usercontroller = require("../controllers/users")
-const jwt = require("../middleware/jwt")
+const userController = require('../controllers/users')
+const jwt = require('../middleware/jwt')
 
-router.post("/signin", usercontroller.signIn)
-router.get("/profile", jwt.verifyToken, usercontroller.profile)
+router.post('/signin', userController.signIn)
+router.get('/profile', jwt.verifyToken, userController.profile)
 
 module.exports = router

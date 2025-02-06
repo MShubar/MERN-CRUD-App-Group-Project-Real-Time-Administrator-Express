@@ -34,10 +34,11 @@ const companySchema = new mongoose.Schema(
       type: String,
       enum: ['CR-rejected', 'CR-in-progress', 'active', 'Deleted']
     },
-    users: [
+    userId: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
+        ref: 'User',
+        required: true
       }
     ]
   },
@@ -48,4 +49,4 @@ const companySchema = new mongoose.Schema(
 
 Company = mongoose.model('Company', companySchema)
 
-module.exports = User
+module.exports = Company
