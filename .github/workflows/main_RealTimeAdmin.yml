@@ -61,4 +61,4 @@ jobs:
           app-name: 'RealTimeAdmin'
           slot-name: 'Production'
           package: .
-          publish-profile: ${{ secrets.AzureAppService_PublishProfile_5f9af5ffe812432aa15eb3bdde4ce1ca }}
+          publish-profile: ${{ secrets.AzureAppService_PublishProfile_f9159f9bc6974d9a8277d04860dad28f }}
