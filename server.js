@@ -12,6 +12,7 @@ const PORT = process.env.PORT
 // require paths
 const userRouter = require("./routes/users")
 const companyRouter = require("./routes/companies")
+const employeeRouter = require("./routes/employees")
 
 app.use(express.static("public"))
 app.use(express.json())
