@@ -34,8 +34,9 @@ mongoose.connect(process.env.MONGODB_URI)
 mongoose.connection.on('connected', () => {
   console.log(`Connection to MongoDB ${mongoose.connection.name}`)
 })
-app.use('/users', userRouter)
-app.use('/companies', companyRouter)
-app.use('/employees', employeeRouter)
+app.use("/users", userRouter)
+app.use("/companies", companyRouter)
+app.use("/employees", employeeRouter)
+
 
 app.listen(PORT, () => console.log(`Server is running on port ${PORT}`))

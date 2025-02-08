@@ -1,28 +1,51 @@
 const Employee = require('../models/Employee')
 const express = require('express')
 const { createUser } = require('./users');
+const { signToken } = require('../middleware/jwt') // Ensure this is correctly imported
+
 ////////////////////This function is not yet well structured//////////////////
 const createEmployee = async (req, res) => {
-  //console.log('Request body:', req.body)
   try {
-    req.body.companyId= req.user._id // gitting the current logged in company user id
-    const { email, password,  ...rest } = req.body // extract the email and password to be added as a new user in the users table first 
-    const newUser= await createUser({email, password})
-    if(newUser){
-      const newEmployee = await Employee.create({
-        rest // Adding the rest of the employee information to the employee table
-      })
-      res.status(201).json(newEmployee)
+    const {
+      name,
+      image,
+      position,
+      companyId,
+      departmentId,
+      status,
+      email,
+      password
+    } = req.body
+
+    if (
+      !name || !status || !email|| !password
+    ) {
+      return res.status(400).json({ error: 'Required fields are missing!' })
     }
-    else{
-      res
-      .status(500)
-      .json({ message: 'Error adding new user', error: error.message })
+    const existingUser = await User.findOne({ email })
+    if (existingUser) {
+      return res.status(400).json({ error: 'User already exists' })
     }
+    const user = await createUser(email, password)
+        const employee = new Employee({
+          name,
+          image,
+          position,
+          companyId,
+          departmentId,
+          status,
+          userId: [user._id]
+        })
+        await employee.save()
+        const token = signToken(user)
+        return res.status(201).json({
+          message: 'Employee Created successfully',
+          employee,token
+        })
   } catch (error) {
-    res.status(500).json({ error: error.message })
+    res.status(500).json({ error: error.message });
   }
-}
+};
 const findAllEmployees = async (req, res) => {
   try {
     const foundEmployees = await Employee.find()
