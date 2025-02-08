@@ -5,6 +5,7 @@ const { signToken } = require('../middleware/jwt') // Ensure this is correctly i
 const signUp = async (req, res) => {
   try {
     console.log('Request Body:', req.body)
+
     const {
       name,
       address,
