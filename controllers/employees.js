@@ -1,9 +1,7 @@
 const Employee = require('../models/Employee')
-const express = require('express')
 const { createUser } = require('./users');
 const { signToken } = require('../middleware/jwt') // Ensure this is correctly imported
 
-////////////////////This function is not yet well structured//////////////////
 const createEmployee = async (req, res) => {
   try {
     const {

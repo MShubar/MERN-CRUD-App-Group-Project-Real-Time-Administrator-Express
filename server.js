@@ -10,9 +10,10 @@ const methodOverride = require('method-override')
 const PORT = process.env.PORT
 
 // require paths
-const userRouter = require('./routes/users')
-const companyRouter = require('./routes/companies')
-const employeeRouter = require('./routes/employees')
+const userRouter = require("./routes/users")
+const companyRouter = require("./routes/companies")
+const employeeRouter = require("./routes/employees")
+const employeeShiftsRouter = require("./routes/employeeshifts")
 
 app.use(express.static('public'))
 app.use(express.json())
@@ -37,6 +38,7 @@ mongoose.connection.on('connected', () => {
 app.use("/users", userRouter)
 app.use("/companies", companyRouter)
 app.use("/employees", employeeRouter)
+app.use("/employeeshifts", employeeShiftsRouter)
 
 
 app.listen(PORT, () => console.log(`Server is running on port ${PORT}`))

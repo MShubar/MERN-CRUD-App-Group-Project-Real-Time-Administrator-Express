@@ -1,0 +1,10 @@
+const express = require('express')
+const router = express.Router()
+const employeeShiftsController = require('../controllers/employeeshifts')
+const { verifyToken } = require('../middleware/jwt')
+router.post('/new', verifyToken, employeeShiftsController.createEmployeeShift)
+router.get('/', verifyToken, employeeShiftsController.findAllEmployeesShfits)
+router.get('/:employeeShiftId', verifyToken, employeeShiftsController.showEmployeeShift)
+router.put('/:employeeShiftId', verifyToken, employeeShiftsController.editEmployeeShift)
+router.delete('/:employeeShiftId', verifyToken, employeeShiftsController.deleteEmployeeShift)
+module.exports = router
