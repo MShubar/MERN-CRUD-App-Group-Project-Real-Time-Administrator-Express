@@ -29,4 +29,14 @@ const createEmployeeShift = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 }
-module.exports = {createEmployeeShift}
+const findAllEmployeesShfits = async (req, res) => {
+  try {
+    const foundEmployeesShfits = await EmployeeShift.find()
+    res.status(200).json(foundEmployeesShfits)
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: 'Getting all Employees Shifts', error: error.message })
+  }
+}
+module.exports = {createEmployeeShift,findAllEmployeesShfits}
