@@ -2,31 +2,18 @@ const User = require('../models/User')
 const bcrypt = require('bcrypt')
 const { signToken } = require('../middleware/jwt')
 
-const signUp = async (req, res) => {
+const createUser = async (email, password, role = 'employee') => {
   try {
-    const { email, password } = req.body
-    // if (!email || !password) {
-    //   return res.status(400).json({ error: 'Missing required fields.' })
-    // }
-    // const userExist = await User.findOne({ email })
-    // if (userExist) {
-    //   return res.status(409).json({ error: 'Email already taken.' })
-    // }
-    const hashedPassword = bcrypt.hashSync(password, +process.env.SALT)
-
-    const user = await User.create({
+    const hashedPassword = await bcrypt.hash(password, 10)
+    const user = new User({
       email,
       password: hashedPassword,
-      role: 'company'
+      role
     })
-
-    const token = signToken(user)
-    return res
-      .status(201)
-      .json({ message: 'User created successfully.', token })
+    await user.save()
+    return user
   } catch (error) {
-    console.error(error)
-    res.status(500).json({ error: 'Something went wrong!' })
+    throw new Error(error.message)
   }
 }
 
@@ -36,14 +23,17 @@ const signIn = async (req, res) => {
     if (!email || !password) {
       return res.status(400).json({ error: 'Missing required fields.' })
     }
+
     const user = await User.findOne({ email })
     if (!user) {
       return res.status(400).json({ error: 'Invalid email or password.' })
     }
+
     const matched = bcrypt.compareSync(password, user.password)
     if (!matched) {
       return res.status(400).json({ error: 'Invalid email or password.' })
     }
+
     const token = signToken(user)
     return res.status(200).json({ message: 'Login successful.', token, user })
   } catch (error) {
@@ -65,8 +55,5 @@ const profile = async (req, res) => {
     res.status(500).json({ error: 'Something went wrong!' })
   }
 }
-module.exports = {
-  signUp,
-  signIn,
-  profile
-}
+
+module.exports = { createUser, signIn, profile }
