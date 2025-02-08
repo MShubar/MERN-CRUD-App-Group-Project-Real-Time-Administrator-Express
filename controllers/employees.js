@@ -1,6 +1,8 @@
 const Employee = require('../models/Employee')
 const express = require('express')
 const { createUser } = require('./users');
+const { signToken } = require('../middleware/jwt') // Ensure this is correctly imported
+
 ////////////////////This function is not yet well structured//////////////////
 const createEmployee = async (req, res) => {
   try {
@@ -25,7 +27,7 @@ const createEmployee = async (req, res) => {
       return res.status(400).json({ error: 'User already exists' })
     }
     const user = await createUser(email, password)
-        const employee = new Company({
+        const employee = new Employee({
           name,
           image,
           position,
@@ -35,9 +37,10 @@ const createEmployee = async (req, res) => {
           userId: [user._id]
         })
         await employee.save()
+        const token = signToken(user)
         return res.status(201).json({
           message: 'Employee Created successfully',
-          employee
+          employee,token
         })
   } catch (error) {
     res.status(500).json({ error: error.message });
