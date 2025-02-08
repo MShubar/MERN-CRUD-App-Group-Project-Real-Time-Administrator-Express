@@ -36,5 +36,6 @@ mongoose.connection.on("connected", () => {
 })
 app.use("/users", userRouter)
 app.use("/companies", companyRouter)
+app.use("/employees", employeeRouter)
 
 app.listen(PORT, () => console.log(`Server is running on port ${PORT}`))
