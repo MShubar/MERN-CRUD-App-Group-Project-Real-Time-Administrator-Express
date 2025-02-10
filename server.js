@@ -14,6 +14,8 @@ const userRouter = require("./routes/users")
 const companyRouter = require("./routes/companies")
 const employeeRouter = require("./routes/employees")
 const employeeShiftsRouter = require("./routes/employeeshifts")
+const departmentRouter = require('./routes/departments')
+const shiftRouter = require('./routes/shifts')
 
 app.use(express.static('public'))
 app.use(express.json())
@@ -39,6 +41,8 @@ app.use("/users", userRouter)
 app.use("/companies", companyRouter)
 app.use("/employees", employeeRouter)
 app.use("/employeeshifts", employeeShiftsRouter)
+app.use('/department', departmentRouter)
+app.use('/shift', shiftRouter)
 
 
 app.listen(PORT, () => console.log(`Server is running on port ${PORT}`))
