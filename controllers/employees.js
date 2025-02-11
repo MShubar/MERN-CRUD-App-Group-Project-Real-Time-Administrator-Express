@@ -1,4 +1,5 @@
 const Employee = require('../models/Employee')
+const User = require('../models/User')
 const { createUser } = require('./users');
 const { signToken } = require('../middleware/jwt') // Ensure this is correctly imported
 
@@ -97,6 +98,13 @@ const editEmployee = async (req, res) => {
 const deleteEmployee = async (req, res) => {
   try {
     // Find the Employee to be deleted
+    const deletedEmployee = await Employee.findById(req.params.employeeId)
+    //console.log("deletedEmployee============>",deletedEmployee)
+    if (!deletedEmployee) {
+      res.status(404)
+      throw new Error('Employee not found :(')
+    }
+   // await User.findByIdAndDelete({ deletedEmployee.userId })
     await Employee.findByIdAndDelete(req.params.employeeId)
     res.status(200).json({
       message: `Successfully Deleted Employee with the ID of ${req.params.employeeId}`
