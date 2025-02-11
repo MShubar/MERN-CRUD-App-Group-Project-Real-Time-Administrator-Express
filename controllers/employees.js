@@ -1,7 +1,7 @@
 const Employee = require('../models/Employee')
 const User = require('../models/User')
 const { createUser } = require('./users');
-const { signToken } = require('../middleware/jwt') // Ensure this is correctly imported
+const { signToken } = require('../middleware/jwt') 
 
 const createEmployee = async (req, res) => {
   try {
@@ -16,6 +16,7 @@ const createEmployee = async (req, res) => {
       password
     } = req.body
 
+
     if (
       !name || !status || !email|| !password
     ) {
@@ -26,6 +27,7 @@ const createEmployee = async (req, res) => {
       return res.status(400).json({ error: 'User already exists' })
     }
     const user = await createUser(email, password)
+
         const employee = new Employee({
           name,
           image,
@@ -41,6 +43,7 @@ const createEmployee = async (req, res) => {
           message: 'Employee Created successfully',
           employee,token
         })
+
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -57,9 +60,7 @@ const findAllEmployees = async (req, res) => {
 }
 const showEmployee = async (req, res) => {
   try {
-    const foundEmployee = await Employee.findById(
-      req.params.employeeId
-    )
+    const foundEmployee = await Employee.findById(req.params.employeeId)
     if (!foundEmployee) {
       res.status(404)
       throw new Error('Employee Not Found!')
@@ -80,14 +81,14 @@ const editEmployee = async (req, res) => {
       req.body,
       { new: true }
     )
-    if(updatedEmployee){
+    if (updatedEmployee) {
       res.status(200).json(updatedEmployee)
-    }else{
+    } else {
       res
-      .status(500)
-      .json({ message: 'Error updating employee', error: error.message })
+        .status(500)
+        .json({ message: 'Error updating employee', error: error.message })
     }
-  }catch(error){
+  } catch (error) {
     if (res.statusCode === 404) {
       res.json({ error: error.message })
     } else {
@@ -115,5 +116,10 @@ const deleteEmployee = async (req, res) => {
   }
 }
 
-
-module.exports = {createEmployee,findAllEmployees,showEmployee,editEmployee,deleteEmployee}
+module.exports = {
+  createEmployee,
+  findAllEmployees,
+  showEmployee,
+  editEmployee,
+  deleteEmployee
+}
