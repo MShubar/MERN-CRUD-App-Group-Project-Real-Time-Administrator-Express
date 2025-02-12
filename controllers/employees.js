@@ -1,6 +1,6 @@
 const Employee = require('../models/Employee')
-const { createUser } = require('./users');
-const { signToken } = require('../middleware/jwt') 
+const { createUser } = require('./users')
+const { signToken } = require('../middleware/jwt')
 
 const createEmployee = async (req, res) => {
   try {
@@ -15,10 +15,7 @@ const createEmployee = async (req, res) => {
       password
     } = req.body
 
-
-    if (
-      !name || !status || !email|| !password
-    ) {
+    if (!name || !status || !email || !password) {
       return res.status(400).json({ error: 'Required fields are missing!' })
     }
     const existingUser = await User.findOne({ email })
@@ -26,27 +23,26 @@ const createEmployee = async (req, res) => {
       return res.status(400).json({ error: 'User already exists' })
     }
     const user = await createUser(email, password)
-
-        const employee = new Employee({
-          name,
-          image,
-          position,
-          companyId,
-          departmentId,
-          status,
-          userId: [user._id]
-        })
-        await employee.save()
-        const token = signToken(user)
-        return res.status(201).json({
-          message: 'Employee Created successfully',
-          employee,token
-        })
-
+    const employee = new Employee({
+      name,
+      image,
+      position,
+      companyId,
+      departmentId,
+      status,
+      userId: [user._id]
+    })
+    await employee.save()
+    const token = signToken(user)
+    return res.status(201).json({
+      message: 'Employee Created successfully',
+      employee,
+      token
+    })
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: error.message })
   }
-};
+}
 const findAllEmployees = async (req, res) => {
   try {
     const foundEmployees = await Employee.find()

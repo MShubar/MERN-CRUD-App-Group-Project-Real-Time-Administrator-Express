@@ -1,22 +1,29 @@
 const mongoose = require('mongoose')
 const employee_shiftSchema = new mongoose.Schema(
   {
-    startDate: { type: Date, default: Date.now },
-    endDate: { type: Date, default: () => {
-        const date = new Date();
-        date.setMonth(date.getMonth() + 1); // Add one month AI code
-        return date;
-      } },
-    employeeId: { type: mongoose.Schema.Types.ObjectId,
-          ref: 'Employee' },
-    companyId: { type: mongoose.Schema.Types.ObjectId,
-          ref: 'Company' },
+    startDate: {
+      type: Date,
+      required: true,
+      set: (date) => new Date(date.setUTCHours(0, 0, 0, 0)),
+      get: (date) => date.toISOString().split('T')[0]
+    },
+    endDate: {
+      type: Date,
+      required: true,
+      set: (date) => new Date(date.setUTCHours(0, 0, 0, 0)),
+      get: (date) => date.toISOString().split('T')[0]
+    },
+    employeeId: { type: mongoose.Schema.Types.ObjectId, ref: 'Employee' },
+    companyId: { type: mongoose.Schema.Types.ObjectId, ref: 'Company' },
+    shiftId: { type: mongoose.Schema.Types.ObjectId, ref: 'Shift' }
   },
   {
-    timestamps: true
+    timestamps: true,
+    toJSON: { getters: true },
+    toObject: { getters: true }
   }
 )
 
-const Employee_Shif = mongoose.model('Employee_Shif', employee_shiftSchema)
+const Employee_Shift = mongoose.model('Employee_Shift', employee_shiftSchema)
 
-module.exports = Employee_Shif
+module.exports = Employee_Shift

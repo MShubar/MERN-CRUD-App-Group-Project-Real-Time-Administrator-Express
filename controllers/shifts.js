@@ -1,15 +1,24 @@
 const Shift = require('../models/Shift')
 const express = require('express')
 
+function formatTime(time) {
+  if (typeof time === 'string') {
+    return time
+  }
+  return new Date(time).toLocaleTimeString([], {
+    hour: '2-digit',
+    minute: '2-digit'
+  })
+}
 const createShift = async (req, res) => {
   console.log('Request body:', req.body)
   try {
     const { name, startTime, endTime } = req.body
-    const companyId = req.session.companyId 
+    const companyId = req.session.companyId
     const newShift = await Shift.create({
       name,
-      startTime,
-      endTime,
+      startTime: formatTime(startTime),
+      endTime: formatTime(endTime),
       companyId
     })
     res.status(201).json(newShift)
@@ -20,20 +29,22 @@ const createShift = async (req, res) => {
 
 const findAllShifts = async (req, res) => {
   try {
-    const companyId = req.session.companyId 
+    const companyId = req.session.companyId
     const foundShifts = await Shift.find({ companyId })
     res.status(200).json(foundShifts)
   } catch (error) {
-    res.status(500).json({ message: 'Getting all shifts', error: error.message })
+    res
+      .status(500)
+      .json({ message: 'Getting all shifts', error: error.message })
   }
 }
 
 const showShift = async (req, res) => {
   try {
-    const companyId = req.session.companyId 
+    const companyId = req.session.companyId
     const foundShift = await Shift.findOne({
       _id: req.params.shiftId,
-      companyId 
+      companyId
     })
     if (!foundShift) {
       res.status(404)
@@ -51,10 +62,15 @@ const showShift = async (req, res) => {
 
 const editShift = async (req, res) => {
   try {
-    const companyId = req.session.companyId 
-    const updatedShift = await Shift.findOneAndUpdate(
-      { _id: req.params.shiftId, companyId },
-      req.body,
+    const companyId = req.session.companyId
+    const updatedShift = await Shift.findByIdAndUpdate(
+      req.params.id,
+      {
+        name,
+        startTime: formatTime(startTime),
+        endTime: formatTime(endTime),
+        companyId
+      },
       { new: true }
     )
     if (!updatedShift) {
@@ -73,7 +89,7 @@ const editShift = async (req, res) => {
 
 const deleteShift = async (req, res) => {
   try {
-    const companyId = req.session.companyId 
+    const companyId = req.session.companyId
     const deletedShift = await Shift.findOneAndDelete({
       _id: req.params.shiftId,
       companyId
