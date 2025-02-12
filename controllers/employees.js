@@ -15,8 +15,6 @@ const createEmployee = async (req, res) => {
       email,
       password
     } = req.body
-
-
     if (
       !name || !status || !email|| !password
     ) {
@@ -45,12 +43,14 @@ const createEmployee = async (req, res) => {
         })
 
   } catch (error) {
+    console.error('Error creating employee:', error.message);
     res.status(500).json({ error: error.message });
   }
 };
 const findAllEmployees = async (req, res) => {
   try {
     const foundEmployees = await Employee.find()
+    console.log(foundEmployees)
     res.status(200).json(foundEmployees)
   } catch (error) {
     res
