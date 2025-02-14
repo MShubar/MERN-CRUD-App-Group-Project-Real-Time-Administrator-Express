@@ -3,6 +3,7 @@ const User = require('../models/User')
 const { createUser } = require('./users');
 const { signToken } = require('../middleware/jwt') 
 
+
 const createEmployee = async (req, res) => {
   try { 
    // console.log("req.body=======",req.body);
@@ -27,6 +28,7 @@ const createEmployee = async (req, res) => {
       return res.status(400).json({ error: 'User already exists' })
     }
     const user = await createUser(email, password)
+
     //console.log("user=======",user);
         const employee = new Employee({
           name,
@@ -48,7 +50,7 @@ const createEmployee = async (req, res) => {
     console.error('Error creating employee:', error.message);
     res.status(500).json({ error: error.message });
   }
-};
+}
 const findAllEmployees = async (req, res) => {
   try {
     const companyId = req.user._id
