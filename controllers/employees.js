@@ -4,10 +4,12 @@ const { createUser } = require('./users');
 const { signToken } = require('../middleware/jwt') 
 
 const createEmployee = async (req, res) => {
-  try {
+  try { 
+   // console.log("req.body=======",req.body);
+  
     const {
       name,
-      image,
+      
       position,
       companyId,
       departmentId,
@@ -25,10 +27,10 @@ const createEmployee = async (req, res) => {
       return res.status(400).json({ error: 'User already exists' })
     }
     const user = await createUser(email, password)
-
+    //console.log("user=======",user);
         const employee = new Employee({
           name,
-          image,
+          
           position,
           companyId,
           departmentId,
@@ -49,7 +51,8 @@ const createEmployee = async (req, res) => {
 };
 const findAllEmployees = async (req, res) => {
   try {
-    const foundEmployees = await Employee.find()
+    const companyId = req.user._id
+    const foundEmployees = await Employee.find({companyId})
     console.log(foundEmployees)
     res.status(200).json(foundEmployees)
   } catch (error) {
@@ -60,20 +63,38 @@ const findAllEmployees = async (req, res) => {
 }
 const showEmployee = async (req, res) => {
   try {
-    const foundEmployee = await Employee.findById(req.params.employeeId)
+    // Find the employee by ID
+    const foundEmployee = await Employee.findById(req.params.employeeId);
     if (!foundEmployee) {
-      res.status(404)
-      throw new Error('Employee Not Found!')
+      res.status(404);
+      throw new Error('Employee Not Found!');
     }
-    res.status(200).json(foundEmployee)
+
+    // Assuming the employee document has a userId field
+    const userId = foundEmployee.userId; // Adjust this if the field name is different
+
+    // Retrieve the user's email and password from the users table
+    const foundUser = await User.findById(userId); // Assuming User is your user model
+    if (!foundUser) {
+      res.status(404);
+      throw new Error('User Not Found!');
+    }
+
+    // Combine employee data with user data
+    const employeeWithUserDetails = {
+      ...foundEmployee.toObject(), // Convert employee document to plain object
+      email: foundUser.email,
+    };
+
+    res.status(200).json(employeeWithUserDetails);
   } catch (error) {
     if (res.statusCode === 404) {
-      res.json({ error: error.message })
+      res.json({ error: error.message });
     } else {
-      res.status(500).json({ error: error.message })
+      res.status(500).json({ error: error.message });
     }
   }
-}
+};
 const editEmployee = async (req, res) => {
   try {
     const updatedEmployee = await Employee.findByIdAndUpdate(
