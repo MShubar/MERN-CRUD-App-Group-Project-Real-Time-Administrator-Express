@@ -62,6 +62,7 @@ const showShift = async (req, res) => {
 
 const editShift = async (req, res) => {
   try {
+    const { name, startTime, endTime } = req.body
     const companyId = req.session.companyId
     const updatedShift = await Shift.findByIdAndUpdate(
       req.params.id,
@@ -79,11 +80,9 @@ const editShift = async (req, res) => {
     }
     res.status(200).json(updatedShift)
   } catch (error) {
-    if (res.statusCode === 404) {
-      res.json({ error: error.message })
-    } else {
-      res.status(500).json({ error: error.message })
-    }
+    res
+      .status(res.statusCode === 404 ? 404 : 500)
+      .json({ error: error.message })
   }
 }
 
