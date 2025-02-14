@@ -6,7 +6,7 @@ const employeeSchema = new mongoose.Schema(
     position: { type: String },
     status: {
       type: String,
-      enum: ['Active', 'Inactive', 'blocked'],
+      enum: ['Active', 'Inactive', 'Blocked'],
       required: true
     },
     userId: {

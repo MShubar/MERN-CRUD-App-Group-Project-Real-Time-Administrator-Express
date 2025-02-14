@@ -5,7 +5,7 @@ const createDepartment = async (req, res) => {
   console.log('Request body:', req.body)
   try {
     const { name, description } = req.body
-    const companyId = req.session.companyId 
+    const companyId = req.user._id
     const newDepartment = await Department.create({
       name,
       description,
@@ -19,7 +19,7 @@ const createDepartment = async (req, res) => {
 
 const findAllDepartments = async (req, res) => {
   try {
-    const companyId = req.session.companyId 
+    const companyId = req.user._id
     const foundDepartments = await Department.find({ companyId })
     res.status(200).json(foundDepartments)
   } catch (error) {
@@ -29,7 +29,7 @@ const findAllDepartments = async (req, res) => {
 
 const showDepartment = async (req, res) => {
   try {
-    const companyId = req.session.companyId 
+    const companyId = req.user._id 
     const foundDepartment = await Department.findOne({
       _id: req.params.departmentId,
       companyId 
@@ -50,7 +50,7 @@ const showDepartment = async (req, res) => {
 
 const editDepartment = async (req, res) => {
   try {
-    const companyId = req.session.companyId 
+    const companyId = req.user._id 
     const updatedDepartment = await Department.findOneAndUpdate(
       { _id: req.params.departmentId, companyId },
       req.body,
@@ -72,7 +72,7 @@ const editDepartment = async (req, res) => {
 
 const deleteDepartment = async (req, res) => {
   try {
-    const companyId = req.session.companyId 
+    const companyId = req.user._id 
     const deletedDepartment = await Department.findOneAndDelete({
       _id: req.params.departmentId,
       companyId
