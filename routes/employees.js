@@ -11,11 +11,6 @@ router.post('/new', employeeController.createEmployee)
 router.get('/', verifyToken, employeeController.findAllEmployees)
 router.get('/:employeeId', verifyToken, employeeController.showEmployee)
 router.put('/:employeeId', verifyToken, employeeController.editEmployee)
-router.delete(
-  '/:employeeId',
-  verifyToken,
-  employeeController.deleteEmployee
-)
-
+router.delete('/:employeeId', verifyToken, employeeController.deleteEmployee)
 
 module.exports = router

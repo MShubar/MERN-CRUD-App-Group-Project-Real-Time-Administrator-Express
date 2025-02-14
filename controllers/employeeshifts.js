@@ -2,18 +2,28 @@ const EmployeeShift = require('../models/EmployeeShift')
 
 const createEmployeeShift = async (req, res) => {
   try {
-    const { startDate, endDate, employeeId, companyId } = req.body
-    //companyId= req.user._id
-    if (!startDate || !endDate || !employeeId || !companyId) {
+    let { startDate, endDate, employeeId, companyId, shiftId } = req.body
+
+    if (!startDate || !endDate || !employeeId || !companyId || !shiftId) {
       return res.status(400).json({ error: 'Required fields are missing!' })
     }
+
+    // Convert startDate and endDate to Date objects
+    startDate = new Date(startDate)
+    endDate = new Date(endDate)
+
+    if (isNaN(startDate) || isNaN(endDate)) {
+      return res.status(400).json({ error: 'Invalid date format!' })
+    }
+
     const employeeShift = new EmployeeShift({
       startDate,
       endDate,
       employeeId,
-      companyId
-      //companyId: [companyId]
+      companyId,
+      shiftId
     })
+
     await employeeShift.save()
     return res.status(201).json({
       message: 'Shift assigned to employee successfully',
@@ -23,6 +33,7 @@ const createEmployeeShift = async (req, res) => {
     res.status(500).json({ error: error.message })
   }
 }
+
 const findAllEmployeesShfits = async (req, res) => {
   try {
     const foundEmployeesShfits = await EmployeeShift.find()

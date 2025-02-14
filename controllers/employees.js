@@ -48,7 +48,7 @@ const createEmployee = async (req, res) => {
     console.error('Error creating employee:', error.message);
     res.status(500).json({ error: error.message });
   }
-};
+}
 const findAllEmployees = async (req, res) => {
   try {
     const companyId = req.user._id
