@@ -14,6 +14,13 @@ const userSchema = new mongoose.Schema(
       type: String,
       enum: ['company', 'employee'],
       default: 'employee'
+    },
+    companyId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Company', // Assuming there's a Company model
+      required: function () {
+        return this.role === 'company'
+      } // Only required if role is 'company'
     }
   },
   {
