@@ -2,14 +2,15 @@ const Employee = require('../models/Employee')
 const User = require('../models/User')
 const { createUser } = require('./users');
 const { signToken } = require('../middleware/jwt') 
+const { uploadToAzure } = require('./uploadToAzure')
 
 const createEmployee = async (req, res) => {
   try { 
-   // console.log("req.body=======",req.body);
+    console.log("req.body=======",req.body);
   
     const {
       name,
-      
+      image,
       position,
       companyId,
       departmentId,
@@ -20,17 +21,27 @@ const createEmployee = async (req, res) => {
     if (
       !name || !status || !email|| !password
     ) {
+      console.log("name=========>>>>",name);
+      console.log("status=========>>>>",status);
+      console.log("email=========>>>>",email);
+      console.log("password=========>>>>",password);
+      
       return res.status(400).json({ error: 'Required fields are missing!' })
     }
     const existingUser = await User.findOne({ email })
     if (existingUser) {
       return res.status(400).json({ error: 'User already exists' })
     }
+    // Handle file uploads to Azure Blob Storage
+    let imageUrl = ''
+    if (req.files && req.files['image']) {
+      imageUrl = await uploadToAzure(req.files['image'][0])
+    }
     const user = await createUser(email, password)
     //console.log("user=======",user);
         const employee = new Employee({
           name,
-          
+          image:imageUrl,
           position,
           companyId,
           departmentId,
