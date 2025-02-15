@@ -6,7 +6,7 @@ const { uploadToAzure } = require('./uploadToAzure')
 
 const createEmployee = async (req, res) => {
   try { 
-    console.log("req.body=======",req.body);
+    //console.log("req.body=======",req.body);
   
     const {
       name,
@@ -21,10 +21,10 @@ const createEmployee = async (req, res) => {
     if (
       !name || !status || !email|| !password
     ) {
-      console.log("name=========>>>>",name);
-      console.log("status=========>>>>",status);
-      console.log("email=========>>>>",email);
-      console.log("password=========>>>>",password);
+      // console.log("name=========>>>>",name);
+      // console.log("status=========>>>>",status);
+      // console.log("email=========>>>>",email);
+      // console.log("password=========>>>>",password);
       
       return res.status(400).json({ error: 'Required fields are missing!' })
     }
@@ -108,6 +108,11 @@ const showEmployee = async (req, res) => {
 };
 const editEmployee = async (req, res) => {
   try {
+    let imageUrl = ''
+    if (req.files && req.files['image']) {
+      imageUrl = await uploadToAzure(req.files['image'][0])
+      req.body.image=imageUrl
+    }
     const updatedEmployee = await Employee.findByIdAndUpdate(
       req.params.employeeId,
       req.body,
