@@ -14,7 +14,7 @@ const createShift = async (req, res) => {
   console.log('Request body:', req.body)
   try {
     const { name, startTime, endTime } = req.body
-    const companyId = req.session.companyId
+    const companyId = req.user._id
     const newShift = await Shift.create({
       name,
       startTime: formatTime(startTime),
@@ -29,7 +29,7 @@ const createShift = async (req, res) => {
 
 const findAllShifts = async (req, res) => {
   try {
-    const companyId = req.session.companyId
+    const companyId = req.user._id
     const foundShifts = await Shift.find({ companyId })
     res.status(200).json(foundShifts)
   } catch (error) {
@@ -41,7 +41,7 @@ const findAllShifts = async (req, res) => {
 
 const showShift = async (req, res) => {
   try {
-    const companyId = req.session.companyId
+    const companyId = req.user._id
     const foundShift = await Shift.findOne({
       _id: req.params.shiftId,
       companyId
@@ -63,7 +63,7 @@ const showShift = async (req, res) => {
 const editShift = async (req, res) => {
   try {
     const { name, startTime, endTime } = req.body
-    const companyId = req.session.companyId
+    const companyId = req.user._id
     const updatedShift = await Shift.findByIdAndUpdate(
       req.params.id,
       {
@@ -88,7 +88,7 @@ const editShift = async (req, res) => {
 
 const deleteShift = async (req, res) => {
   try {
-    const companyId = req.session.companyId
+    const companyId = req.user._id
     const deletedShift = await Shift.findOneAndDelete({
       _id: req.params.shiftId,
       companyId
