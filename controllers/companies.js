@@ -41,11 +41,7 @@ const signUp = async (req, res) => {
       crDocumentUrl = await uploadToAzure(req.files['crDocument'][0])
     }
 
-    const user = await createUser(email, password, 'company')
-    if (!user) {
-      return res.status(500).json({ error: 'User creation failed' })
-    }
-
+    // Create the company first
     const company = new Company({
       name,
       address,
@@ -54,10 +50,19 @@ const signUp = async (req, res) => {
       size,
       logoImage: logoImageUrl,
       crDocument: crDocumentUrl,
-      status: 'CR-in-progress',
-      userId: [user._id]
+      status: 'CR-in-progress'
     })
 
+    await company.save()
+
+    // Now create the user with companyId
+    const user = await createUser(email, password, 'company', company._id)
+    if (!user) {
+      return res.status(500).json({ error: 'User creation failed' })
+    }
+
+    // Assign user to company
+    company.userId.push(user._id)
     await company.save()
 
     const token = signToken(user)
