@@ -1,6 +1,6 @@
 const Employee = require('../models/Employee')
 const User = require('../models/User')
-const { createUser } = require('./users');
+const { createUser, updateUser } = require('./users');
 const { signToken } = require('../middleware/jwt') 
 const { uploadToAzure } = require('./uploadToAzure')
 
@@ -119,7 +119,11 @@ const editEmployee = async (req, res) => {
       { new: true }
     )
     if (updatedEmployee) {
-      res.status(200).json(updatedEmployee)
+      const updatedUser = await updateUser(req.body.email, req.body.password, updatedEmployee.userId, res)
+      if(updatedUser){
+        res.status(200).json(updatedEmployee)
+      }
+      
     } else {
       res
         .status(500)
@@ -137,12 +141,13 @@ const deleteEmployee = async (req, res) => {
   try {
     // Find the Employee to be deleted
     const deletedEmployee = await Employee.findById(req.params.employeeId)
-    //console.log("deletedEmployee============>",deletedEmployee)
+    console.log("deletedEmployee============>",deletedEmployee)
     if (!deletedEmployee) {
       res.status(404)
       throw new Error('Employee not found :(')
     }
-   // await User.findByIdAndDelete({ deletedEmployee.userId })
+    let userId= deletedEmployee.userId
+    await User.findByIdAndDelete(userId)
     await Employee.findByIdAndDelete(req.params.employeeId)
     res.status(200).json({
       message: `Successfully Deleted Employee with the ID of ${req.params.employeeId}`
