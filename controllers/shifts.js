@@ -65,7 +65,7 @@ const editShift = async (req, res) => {
     const { name, startTime, endTime } = req.body
     const companyId = req.user._id
     const updatedShift = await Shift.findByIdAndUpdate(
-      req.params.id,
+      req.params.shiftId,
       {
         name,
         startTime: formatTime(startTime),
