@@ -15,7 +15,7 @@ router.post('/new', upload.fields([{ name: 'image' }]),
 // }, employeeController.createEmployee);
 router.get('/', verifyToken, employeeController.findAllEmployees)
 router.get('/:employeeId', verifyToken, employeeController.showEmployee)
-router.put('/:employeeId', verifyToken, employeeController.editEmployee)
+router.put('/:employeeId', upload.fields([{ name: 'image' }]), employeeController.editEmployee)
 router.delete('/:employeeId', verifyToken, employeeController.deleteEmployee)
 
 module.exports = router

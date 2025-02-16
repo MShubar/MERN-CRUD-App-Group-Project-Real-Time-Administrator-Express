@@ -1,12 +1,12 @@
 const Employee = require('../models/Employee')
 const User = require('../models/User')
-const { createUser } = require('./users');
+const { createUser, updateUser } = require('./users');
 const { signToken } = require('../middleware/jwt') 
 const { uploadToAzure } = require('./uploadToAzure')
 
 const createEmployee = async (req, res) => {
   try { 
-    console.log("req.body=======",req.body);
+    //console.log("req.body=======",req.body);
   
     const {
       name,
@@ -21,10 +21,10 @@ const createEmployee = async (req, res) => {
     if (
       !name || !status || !email|| !password
     ) {
-      console.log("name=========>>>>",name);
-      console.log("status=========>>>>",status);
-      console.log("email=========>>>>",email);
-      console.log("password=========>>>>",password);
+      // console.log("name=========>>>>",name);
+      // console.log("status=========>>>>",status);
+      // console.log("email=========>>>>",email);
+      // console.log("password=========>>>>",password);
       
       return res.status(400).json({ error: 'Required fields are missing!' })
     }
@@ -108,13 +108,22 @@ const showEmployee = async (req, res) => {
 };
 const editEmployee = async (req, res) => {
   try {
+    let imageUrl = ''
+    if (req.files && req.files['image']) {
+      imageUrl = await uploadToAzure(req.files['image'][0])
+      req.body.image=imageUrl
+    }
     const updatedEmployee = await Employee.findByIdAndUpdate(
       req.params.employeeId,
       req.body,
       { new: true }
     )
     if (updatedEmployee) {
-      res.status(200).json(updatedEmployee)
+      const updatedUser = await updateUser(req.body.email, req.body.password, updatedEmployee.userId, res)
+      if(updatedUser){
+        res.status(200).json(updatedEmployee)
+      }
+      
     } else {
       res
         .status(500)
@@ -132,12 +141,13 @@ const deleteEmployee = async (req, res) => {
   try {
     // Find the Employee to be deleted
     const deletedEmployee = await Employee.findById(req.params.employeeId)
-    //console.log("deletedEmployee============>",deletedEmployee)
+    console.log("deletedEmployee============>",deletedEmployee)
     if (!deletedEmployee) {
       res.status(404)
       throw new Error('Employee not found :(')
     }
-   // await User.findByIdAndDelete({ deletedEmployee.userId })
+    let userId= deletedEmployee.userId
+    await User.findByIdAndDelete(userId)
     await Employee.findByIdAndDelete(req.params.employeeId)
     res.status(200).json({
       message: `Successfully Deleted Employee with the ID of ${req.params.employeeId}`
