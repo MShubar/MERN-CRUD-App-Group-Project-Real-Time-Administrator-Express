@@ -1,4 +1,5 @@
 const Department = require('../models/Department')
+const Employee = require('../models/Employee')
 const express = require('express')
 
 const createDepartment = async (req, res) => {
@@ -70,24 +71,50 @@ const editDepartment = async (req, res) => {
   }
 }
 
+// const deleteDepartment = async (req, res) => {
+//   try {
+//     const companyId = req.user._id 
+
+//     const deletedDepartment = await Department.findOneAndDelete({
+//       _id: req.params.departmentId,
+//       companyId
+//     })
+//     res.status(200).json({
+//       message: `Successfully Deleted Department with the ID of ${req.params.departmentId}`
+//     })
+//   } catch (error) {
+//     if (res.statusCode === 404) {
+//       res.json({ error: error.message })
+//     } else {
+//       res.status(500).json({ error: error.message })
+//     }
+//   }
+// }
+
 const deleteDepartment = async (req, res) => {
   try {
-    const companyId = req.user._id 
+    const companyId = req.user._id;
+    const departmentId = req.params.departmentId;
+
+    const deletedEmployees = await Employee.deleteMany({ departmentId, companyId });
+    
     const deletedDepartment = await Department.findOneAndDelete({
-      _id: req.params.departmentId,
-      companyId
-    })
-    res.status(200).json({
-      message: `Successfully Deleted Department with the ID of ${req.params.departmentId}`
-    })
-  } catch (error) {
-    if (res.statusCode === 404) {
-      res.json({ error: error.message })
-    } else {
-      res.status(500).json({ error: error.message })
+      _id: departmentId,
+      companyId,
+    });
+
+    if (!deletedDepartment) {
+      return res.status(404).json({ error: 'Department not found' });
     }
+
+    res.status(200).json({
+      message: `Successfully Deleted Department with the ID of ${departmentId}`,
+    });
+  } catch (error) {
+    console.error('Error during department deletion:', error);
+    res.status(500).json({ error: error.message });
   }
-}
+};
 
 module.exports = {
   createDepartment,
