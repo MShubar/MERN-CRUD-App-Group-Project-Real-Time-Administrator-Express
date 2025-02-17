@@ -7,8 +7,6 @@ const createEmployeeShift = async (req, res) => {
     if (!startDate || !employeeId || !shiftId) {
       return res.status(400).json({ error: 'Required fields are missing!' })
     }
-    console.log('Company ID from session:', req.session.companyId)
-    // Convert startDate and endDate to Date objects
     startDate = new Date(startDate)
     endDate = new Date(endDate)
 
@@ -68,29 +66,19 @@ const showEmployeeShift = async (req, res) => {
 
 const editEmployeeShift = async (req, res) => {
   try {
-    console.log('Received data:', req.body) // Debugging log
-
-    // Convert dates if they exist in the request body
     if (req.body.startDate) req.body.startDate = new Date(req.body.startDate)
     if (req.body.endDate) req.body.endDate = new Date(req.body.endDate)
 
-    // Log the converted values to check before updating
-    console.log('Converted startDate:', req.body.startDate)
-    console.log('Converted endDate:', req.body.endDate)
-
-    // Attempt to update the employee shift by its ID
     const updatedEmployeeShift = await EmployeeShift.findByIdAndUpdate(
       req.params.employeeShiftId,
-      { $set: req.body }, // Use $set to update only provided fields
-      { new: true, runValidators: true } // Return updated document & validate
+      { $set: req.body },
+      { new: true, runValidators: true }
     )
 
     // If no shift was found, return a 404 response
     if (!updatedEmployeeShift) {
       return res.status(404).json({ error: 'Employee shift not found!' })
     }
-
-    console.log('Updated shift:', updatedEmployeeShift) // Debugging log
     res.status(200).json(updatedEmployeeShift)
   } catch (error) {
     console.error('Error updating employee shift:', error.message)
@@ -100,7 +88,6 @@ const editEmployeeShift = async (req, res) => {
 
 const deleteEmployeeShift = async (req, res) => {
   try {
-    // Find the Employee to be deleted
     await EmployeeShift.findByIdAndDelete(req.params.employeeShiftId)
     res.status(200).json({
       message: `Successfully Deleted Employee Shift with the ID of ${req.params.employeeShiftId}`

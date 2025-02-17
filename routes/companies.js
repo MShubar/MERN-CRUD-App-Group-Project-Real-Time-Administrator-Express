@@ -8,5 +8,6 @@ router.post(
   upload.fields([{ name: 'logoImage' }, { name: 'crDocument' }]),
   companyController.signUp
 )
+router.get('/', companyController.findCompanies)
 
 module.exports = router

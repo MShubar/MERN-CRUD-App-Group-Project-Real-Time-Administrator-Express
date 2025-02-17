@@ -41,11 +41,7 @@ const signUp = async (req, res) => {
       crDocumentUrl = await uploadToAzure(req.files['crDocument'][0])
     }
 
-    const user = await createUser(email, password, 'company')
-    if (!user) {
-      return res.status(500).json({ error: 'User creation failed' })
-    }
-
+    // Create the company first
     const company = new Company({
       name,
       address,
@@ -54,10 +50,19 @@ const signUp = async (req, res) => {
       size,
       logoImage: logoImageUrl,
       crDocument: crDocumentUrl,
-      status: 'CR-in-progress',
-      userId: [user._id]
+      status: 'CR-in-progress'
     })
 
+    await company.save()
+
+    // Now create the user with companyId
+    const user = await createUser(email, password, 'company', company._id)
+    if (!user) {
+      return res.status(500).json({ error: 'User creation failed' })
+    }
+
+    // Assign user to company
+    company.userId.push(user._id)
     await company.save()
 
     const token = signToken(user)
@@ -73,4 +78,25 @@ const signUp = async (req, res) => {
   }
 }
 
-module.exports = { signUp }
+const findCompanies = async (req, res) => {
+  try {
+    console.log('Company ID===========================>>>>>:')
+    const companyId = req.user
+    console.log('Company ID===========================>>>>>:', companyId)
+
+    const foundCompanies = await Company.findOne(companyId)
+
+    if (foundCompanies.length === 0) {
+      return res.status(404).json({ message: 'No companies found' })
+    }
+
+    console.log('Found Companies:', foundCompanies)
+    return res.status(200).json(foundCompanies) // Only send response after validation
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: 'Error retrieving companies', error: error.message })
+  }
+}
+
+module.exports = { signUp, findCompanies }
