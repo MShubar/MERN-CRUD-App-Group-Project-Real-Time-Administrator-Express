@@ -78,4 +78,25 @@ const signUp = async (req, res) => {
   }
 }
 
-module.exports = { signUp }
+const findCompanies = async (req, res) => {
+  try {
+    console.log('Company ID===========================>>>>>:')
+    const companyId = req.user
+    console.log('Company ID===========================>>>>>:', companyId)
+
+    const foundCompanies = await Company.findOne(companyId)
+
+    if (foundCompanies.length === 0) {
+      return res.status(404).json({ message: 'No companies found' })
+    }
+
+    console.log('Found Companies:', foundCompanies)
+    return res.status(200).json(foundCompanies) // Only send response after validation
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: 'Error retrieving companies', error: error.message })
+  }
+}
+
+module.exports = { signUp, findCompanies }
