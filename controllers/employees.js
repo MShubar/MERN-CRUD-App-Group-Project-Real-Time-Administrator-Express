@@ -72,7 +72,10 @@ const findAllEmployees = async (req, res) => {
 const showEmployee = async (req, res) => {
   try {
     // Find the employee by ID
-    const foundEmployee = await Employee.findById(req.params.employeeId)
+
+    const foundEmployee = await Employee.findById(req.params.employeeId);
+    //console.log("==foundEmployee========>>>",foundEmployee);
+    
     if (!foundEmployee) {
       res.status(404)
       throw new Error('Employee Not Found!')
