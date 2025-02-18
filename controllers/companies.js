@@ -197,6 +197,7 @@ const editCompany = async (req, res) => {
   }
 }
 const findCompanies = async (req, res) => {
+  // to display the company logo in the navbar
   try {
     const companyId = req.user
     console.log(companyId)
@@ -207,7 +208,7 @@ const findCompanies = async (req, res) => {
     }
 
     console.log('Found Companies:', foundCompanies)
-    return res.status(200).json(foundCompanies)
+    return res.status(200).json(foundCompanies) // Only send response after validation
   } catch (error) {
     return res
       .status(500)
@@ -219,28 +220,51 @@ const deleteCompany = async (req, res) => {
   try {
     const companyId = req.params.companyId
 
+    // Check if the company exists
     const deletedCompany = await Company.findById(companyId)
     if (!deletedCompany) {
       return res.status(404).json({ message: 'Company not found' })
     }
+    console.log(
+      'Employee data:',
+      await Employee.find({ companyId: companyObjectId })
+    )
+    console.log(
+      'Department data:',
+      await Department.find({ companyId: companyObjectId })
+    )
+    console.log('Shift data:', await Shift.find({ companyId: companyObjectId }))
+    console.log(
+      'Employee Shift data:',
+      await EmployeeShift.find({ companyId: companyObjectId })
+    )
 
-    const deletedEmployees = await Employee.deleteMany({ companyId })
+    // Delete all related records
+    const deletedEmployees = await Employee.deleteMany({
+      companyId: companyObjectId
+    })
     console.log(`Deleted ${deletedEmployees.deletedCount} employees.`)
 
-    const deletedDepartments = await Department.deleteMany({ companyId })
+    const deletedDepartments = await Department.deleteMany({
+      companyId: companyObjectId
+    })
     console.log(`Deleted ${deletedDepartments.deletedCount} departments.`)
 
-    const deletedShifts = await Shift.deleteMany({ companyId })
+    const deletedShifts = await Shift.deleteMany({ companyId: companyObjectId })
     console.log(`Deleted ${deletedShifts.deletedCount} shifts.`)
 
-    const deletedEmployeeShifts = await EmployeeShift.deleteMany({ companyId })
+    const deletedEmployeeShifts = await EmployeeShift.deleteMany({
+      companyId: companyObjectId
+    })
     console.log(
       `Deleted ${deletedEmployeeShifts.deletedCount} employee shifts.`
     )
 
+    // Delete associated Users
     await User.deleteMany({ _id: { $in: deletedCompany.userId } })
 
-    await Company.findByIdAndDelete(companyId)
+    // Delete the company itself
+    await Company.findByIdAndDelete(companyObjectId)
 
     return res
       .status(200)
