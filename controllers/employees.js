@@ -61,8 +61,19 @@ const createEmployee = async (req, res) => {
 const findAllEmployees = async (req, res) => {
   try {
     const companyId = req.user._id
+    const user = req.user._id
+
+    const currentUser = await User.findById(user)
+
+    const foundEmployeesForEmployee = await Employee.find(currentUser.companyId)
+
     const foundEmployees = await Employee.find({ companyId })
-    res.status(200).json(foundEmployees)
+    if (currentUser.role == 'employee') {
+      res.status(200).json(foundEmployeesForEmployee)
+    }
+    if (currentUser.role == 'company') {
+      res.status(200).json(foundEmployees)
+    }
   } catch (error) {
     res
       .status(500)
@@ -73,9 +84,9 @@ const showEmployee = async (req, res) => {
   try {
     // Find the employee by ID
 
-    const foundEmployee = await Employee.findById(req.params.employeeId);
+    const foundEmployee = await Employee.findById(req.params.employeeId)
     //console.log("==foundEmployee========>>>",foundEmployee);
-    
+
     if (!foundEmployee) {
       res.status(404)
       throw new Error('Employee Not Found!')

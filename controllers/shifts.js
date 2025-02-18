@@ -1,4 +1,5 @@
 const Shift = require('../models/Shift')
+const User = require('../models/User')
 const express = require('express')
 
 function formatTime(time) {
@@ -30,8 +31,16 @@ const createShift = async (req, res) => {
 const findAllShifts = async (req, res) => {
   try {
     const companyId = req.user._id
+    const user = req.user._id
+    const currentUser = await User.findById(user)
+    console.log(currentUser)
     const foundShifts = await Shift.find({ companyId })
-    res.status(200).json(foundShifts)
+    const foundShiftsEmployees = await Shift.find(currentUser.companyId)
+    if (currentUser.role === 'company') {
+      res.status(200).json(foundShifts)
+    } else if (currentUser.role === 'employee') {
+      res.status(200).json(foundShiftsEmployees)
+    }
   } catch (error) {
     res
       .status(500)

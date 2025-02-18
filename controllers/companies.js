@@ -80,9 +80,7 @@ const signUp = async (req, res) => {
 
 const findCompanies = async (req, res) => {
   try {
-    console.log('Company ID===========================>>>>>:')
     const companyId = req.user
-    console.log('Company ID===========================>>>>>:', companyId)
 
     const foundCompanies = await Company.findOne(companyId)
 
