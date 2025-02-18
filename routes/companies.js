@@ -15,6 +15,6 @@ router.put(
   upload.fields([{ name: 'logoImage' }, { name: 'crDocument' }]),
   companyController.editCompany
 )
-router.get('/check/:companyId', companyController.deleteCompany)
+router.delete('/delete/:companyId', companyController.deleteCompany)
 
 module.exports = router
