@@ -10,8 +10,11 @@ router.post(
 )
 router.get('/', companyController.findCompanies)
 router.get('/:companyId', companyController.showCompany)
-router.put('/:companyId', upload.fields([{ name: 'logoImage' }, { name: 'crDocument' }]), companyController.editCompany)
-router.delete('/', companyController.deleteCompany)
-
+router.put(
+  '/:companyId',
+  upload.fields([{ name: 'logoImage' }, { name: 'crDocument' }]),
+  companyController.editCompany
+)
+router.get('/check/:companyId', companyController.deleteCompany)
 
 module.exports = router
