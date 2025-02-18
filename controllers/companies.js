@@ -81,7 +81,7 @@ const signUp = async (req, res) => {
 const findCompanies = async (req, res) => {
   try {
     const companyId = req.user
-
+    console.log(companyId)
     const foundCompanies = await Company.findOne(companyId)
 
     if (foundCompanies.length === 0) {
