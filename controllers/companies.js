@@ -224,17 +224,23 @@ const deleteCompany = async (req, res) => {
     if (!deletedCompany) {
       return res.status(404).json({ message: 'Company not found' })
     }
-    console.log(
-      'Employee data:',
-      await Employee.find({ companyId: companyId })
-    )
-    const employeesToBeDeletedIds = await Employee.find({ companyId: deletedCompany.userId }).distinct('_id') 
-    const employeesToBeDeletedUsersIds = await Employee.find({ companyId: deletedCompany.userId }).distinct('userId') 
+    console.log('Employee data:', await Employee.find({ companyId: companyId }))
+    const employeesToBeDeletedIds = await Employee.find({
+      companyId: deletedCompany.userId
+    }).distinct('_id')
+    const employeesToBeDeletedUsersIds = await Employee.find({
+      companyId: deletedCompany.userId
+    }).distinct('userId')
     await User.deleteMany({ _id: { $in: deletedCompany.userId } })
-  console.log("=====++++++++employeesToBeDeletedIds====+++++====>>>>>",employeesToBeDeletedIds);
-  console.log("=========employeesToBeDeletedIds========>>>>>",employeesToBeDeletedIds);
-    // Check if the company exists
-    
+    console.log(
+      '=====++++++++employeesToBeDeletedIds====+++++====>>>>>',
+      employeesToBeDeletedIds
+    )
+    console.log(
+      '=========employeesToBeDeletedIds========>>>>>',
+      employeesToBeDeletedIds
+    )
+
     console.log(
       'Department data:',
       await Department.find({ companyId: companyId })
@@ -246,10 +252,12 @@ const deleteCompany = async (req, res) => {
     )
     if (employeesToBeDeletedUsersIds.length > 0) {
       const deletedEmployeeUsers = await User.deleteMany({
-        _id: { $in: employeesToBeDeletedUsersIds }, // Use the employeeId to match
-      });
-      console.log(`Deleted ${deletedEmployeeUsers.deletedCount} deleted Employee Users.`)}
-    // Delete all related records
+        _id: { $in: employeesToBeDeletedUsersIds }
+      })
+      console.log(
+        `Deleted ${deletedEmployeeUsers.deletedCount} deleted Employee Users.`
+      )
+    }
     const deletedEmployees = await Employee.deleteMany({
       companyId: deletedCompany.userId
     })
@@ -260,20 +268,24 @@ const deleteCompany = async (req, res) => {
     })
     console.log(`Deleted ${deletedDepartments.deletedCount} departments.`)
 
-    const deletedShifts = await Shift.deleteMany({ companyId: deletedCompany.userId })
+    const deletedShifts = await Shift.deleteMany({
+      companyId: deletedCompany.userId
+    })
     console.log(`Deleted ${deletedShifts.deletedCount} shifts.`)
 
-    // Step 3: Delete employee shifts using the retrieved employee IDs
-if (employeesToBeDeletedIds.length > 0) {
-  const deletedEmployeeShifts = await EmployeeShift.deleteMany({
-    employeeId: { $in: employeesToBeDeletedIds }, // Use the employeeId to match
-  });
+    if (employeesToBeDeletedIds.length > 0) {
+      const deletedEmployeeShifts = await EmployeeShift.deleteMany({
+        employeeId: { $in: employeesToBeDeletedIds }
+      })
 
-  console.log(`Deleted ${deletedEmployeeShifts.deletedCount} employee shifts.`);
-} else {
-  console.log('No employee shifts to delete as there were no deleted employees.');
-}
-    // Delete the company itself
+      console.log(
+        `Deleted ${deletedEmployeeShifts.deletedCount} employee shifts.`
+      )
+    } else {
+      console.log(
+        'No employee shifts to delete as there were no deleted employees.'
+      )
+    }
     await Company.findByIdAndDelete(companyId)
 
     return res

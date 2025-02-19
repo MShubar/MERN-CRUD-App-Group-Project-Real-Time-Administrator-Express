@@ -21,6 +21,7 @@ app.use(express.static('public'))
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use(cors())
+
 app.use(morgan('dev'))
 app.use(methodOverride('_method'))
 app.use(
