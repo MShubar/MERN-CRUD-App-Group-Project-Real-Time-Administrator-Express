@@ -1,4 +1,3 @@
-// uploadToAzure.js
 const { BlobServiceClient } = require('@azure/storage-blob')
 const { v4: uuidv4 } = require('uuid')
 require('dotenv').config()
