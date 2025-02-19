@@ -111,6 +111,7 @@ const showCompany = async (req, res) => {
     }
   }
 }
+
 const editCompany = async (req, res) => {
   try {
     // console.log('Request Body:', req.body)
